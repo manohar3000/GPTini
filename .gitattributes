@@ -1,0 +1,19 @@
+# Normalize all text files with Unix-style LF endings
+* text=auto
+
+# Python source files (LF endings)
+*.py     text eol=lf
+
+# Text files (LF endings)
+*.txt    text eol=lf
+*.md     text eol=lf
+
+# Treat binary files (e.g., models or images, if added in future) as binary
+*.pt     binary
+*.pth    binary
+*.pkl    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.pdf    binary
