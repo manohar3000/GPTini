@@ -1,4 +1,6 @@
-# PyTorch Language Model Toolkit
+# GPTini
+
+![Logo](assets/GPTini_logo.png)<br>
 
 A simple yet powerful implementation of a Transformer-based language model in PyTorch. This project provides tools for training character-level language models and generating text.
 
@@ -14,7 +16,7 @@ A simple yet powerful implementation of a Transformer-based language model in Py
 ## Project Structure
 
 ```
-pytorch-language-model/
+GPTini/
 ├── config.py          # Configuration settings
 ├── model.py           # Transformer model implementation
 ├── train.py           # Training functionality
@@ -35,8 +37,8 @@ torch>=1.10.0
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/pytorch-language-model.git
-cd pytorch-language-model
+git clone https://github.com/manohar3000/GPTini.git
+cd GPTini
 ```
 
 ### 2. Prepare your dataset
