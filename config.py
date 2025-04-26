@@ -16,9 +16,9 @@ MODEL_SAVE_PATH = "model_checkpoints"
 
 # Model architecture - Optimized for RTX 4050 GPU
 VOCAB_SIZE = None  # Will be set after processing the input file
-N_EMBED = 256      # Embedding dimension (size of the hidden states)
-N_HEADS = 4        # Number of attention heads
-N_LAYERS = 4       # Number of transformer blocks
+N_EMBED = 384      # Embedding dimension (size of the hidden states)
+N_HEADS = 6        # Number of attention heads
+N_LAYERS = 6       # Number of transformer blocks
 HEAD_SIZE = N_EMBED // N_HEADS
 BLOCK_SIZE = 512   # max sequence length
 
