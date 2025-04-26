@@ -87,21 +87,14 @@ class MultiHeadAttention(nn.Module):
         return self.W_out(attn_output)
 
 class Block(nn.Module):
-    """
-    Transformer block with self-attention and feed-forward layers.
-    
-    Each block consists of a multi-head self-attention layer followed
-    by a position-wise feed-forward network, with layer normalization
-    and residual connections.
-    """
-    
-    def __init__(self, n_embed: int, n_heads: int):
+    def __init__(self, n_embed: int, n_heads: int, dropout: float = 0.1):
         """
-        Initialize a transformer block.
+        Initialize a transformer block with dropout.
         
         Args:
             n_embed: Embedding dimension
             n_heads: Number of attention heads
+            dropout: Dropout probability
         """
         super(Block, self).__init__()
         
@@ -114,10 +107,13 @@ class Block(nn.Module):
         
         # Position-wise feed-forward network
         self.ffn = nn.Sequential(
-            nn.Linear(n_embed, 4 * n_embed),  # Commonly used 4x expansion
-            nn.GELU(),  # GELU activation is standard in modern transformers
+            nn.Linear(n_embed, 4 * n_embed),
+            nn.GELU(),
             nn.Linear(4 * n_embed, n_embed)
         )
+        
+        # Dropout layer
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -129,11 +125,11 @@ class Block(nn.Module):
         Returns:
             Output tensor of shape (batch_size, block_size, n_embed)
         """
-        # Self-attention with residual connection and layer norm
-        x = x + self.attention(self.ln1(x))
+        # Self-attention with residual connection and dropout
+        x = x + self.dropout(self.attention(self.ln1(x)))
         
-        # Feed-forward with residual connection and layer norm
-        x = x + self.ffn(self.ln2(x))
+        # Feed-forward network with residual connection and dropout
+        x = x + self.dropout(self.ffn(self.ln2(x)))
         
         return x
 
@@ -144,9 +140,9 @@ class Transformer(nn.Module):
     A decoder-only transformer that predicts the next token in a sequence.
     """
     
-    def __init__(self, vocab_size: int, n_embed: int, n_heads: int, n_layers: int, block_size: int):
+    def __init__(self, vocab_size: int, n_embed: int, n_heads: int, n_layers: int, block_size: int, dropout: float = 0.1):
         """
-        Initialize the transformer model.
+        Initialize the transformer model with dropout.
         
         Args:
             vocab_size: Size of the vocabulary
@@ -154,6 +150,7 @@ class Transformer(nn.Module):
             n_heads: Number of attention heads
             n_layers: Number of transformer blocks
             block_size: Maximum sequence length
+            dropout: Dropout probability
         """
         super(Transformer, self).__init__()
         
@@ -161,15 +158,16 @@ class Transformer(nn.Module):
         self.w_embed = nn.Embedding(vocab_size, n_embed)
         self.w_pos = nn.Embedding(block_size, n_embed)
         
-        # Stack of transformer blocks
-        self.blocks = nn.ModuleList([Block(n_embed, n_heads) for _ in range(n_layers)])
+        # Stack of transformer blocks with dropout passed in
+        self.blocks = nn.ModuleList([Block(n_embed, n_heads, dropout=dropout) for _ in range(n_layers)])
         
         # Final layer norm and output projection
         self.ln_final = nn.LayerNorm(n_embed)
         self.fc_out = nn.Linear(n_embed, vocab_size)
         
-        # Save block_size for positional embeddings
+        # Save block size and dropout
         self.block_size = block_size
+        self.dropout = nn.Dropout(dropout)
         
         # Initialize weights
         self.apply(self._init_weights)
@@ -211,6 +209,9 @@ class Transformer(nn.Module):
         token_embeddings = self.w_embed(x)
         position_embeddings = self.w_pos(positions)
         x = token_embeddings + position_embeddings
+        
+        # Apply dropout after embeddings, if desired
+        x = self.dropout(x)
         
         # Apply transformer blocks
         for block in self.blocks:

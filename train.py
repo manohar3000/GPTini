@@ -9,6 +9,8 @@ import os
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+import matplotlib.pyplot as plt
 from typing import Dict, Tuple
 
 from config import *
@@ -88,6 +90,16 @@ def train():
     
     # Training loop
     best_val_loss = float('inf')
+
+    train_losses = []
+    iterations = []
+    val_losses = []
+
+    # Early stopping parameters
+    no_improve_count = 0
+    early_stop_patience = 500  # Number of iterations to wait for improvement
+
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.8, patience=50)
     
     for iteration in range(start_iteration, MAX_ITERATIONS):
         # Training step
@@ -100,25 +112,46 @@ def train():
         logits = model(x)
         loss = F.cross_entropy(logits.view(-1, vocab_size), y.view(-1))
         
+        # Track training loss
+        iterations.append(iteration + 1)
+        train_losses.append(loss.item())  
+            
         # Backward pass and optimization
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         
         # Evaluation
-        if (iteration + 1) % EVAL_INTERVAL == 0 or iteration == MAX_ITERATIONS - 1:
+        if (iteration + 1) % EVAL_INTERVAL == 0:
             val_loss = evaluate_model(model, val_data, BLOCK_SIZE, BATCH_SIZE, DEVICE)
-            print(f"Iteration {iteration + 1}/{MAX_ITERATIONS} | Train Loss: {loss.item():.4f} | Val Loss: {val_loss:.4f}")
-            
-            # Save checkpoint if improved
+            # Save validation loss
+            val_losses.append(val_loss)
+
+            # Update learning rate based on validation loss
+            scheduler.step(val_loss)
+
+            # For monitoring, print current learning rate
+            current_lr = optimizer.param_groups[0]['lr']
+            print(f"Current learning rate: {current_lr}")
+
+            # Track validation loss for early stopping
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                save_model_checkpoint(model, optimizer, iteration + 1, MODEL_SAVE_PATH)
-        
+                no_improve_count = 0
+            else:
+                no_improve_count += 1
+                
+            # Early stopping check
+            if no_improve_count >= early_stop_patience:
+                print(f"Early stopping triggered after {iteration + 1} iterations")
+                break
+
         # Regular checkpointing
         if (iteration + 1) % SAVE_CHECKPOINT_INTERVAL == 0:
             checkpoint_path = os.path.join(MODEL_SAVE_PATH, f"checkpoint_iter_{iteration + 1}.pt")
             save_model_checkpoint(model, optimizer, iteration + 1, MODEL_SAVE_PATH)
+            print(f"Iteration {iteration + 1}/{MAX_ITERATIONS} | Train Loss: {loss.item():.4f} | Val Loss: {val_loss:.4f}")
+
     
     print("Training complete!")
     
@@ -140,6 +173,26 @@ def train():
         }
     }, final_checkpoint_path)
     print(f"Final model saved to {final_checkpoint_path}")
+
+    # Plot training and validation loss in one graph
+    plt.figure(figsize=(12, 6))
+    plt.plot(iterations, train_losses, label='Training Loss')
+    
+    # Calculate iterations for validation points
+    val_iterations = [EVAL_INTERVAL * (i + 1) for i in range(len(val_losses))]
+    plt.plot(val_iterations, val_losses, label='Validation Loss', color='orange')
+    
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss Over Time')
+    plt.legend()
+    plt.grid(True)
+    
+    # Save the combined plot
+    combined_plot_path = os.path.join(MODEL_SAVE_PATH, 'combined_loss.png')
+    plt.savefig(combined_plot_path)
+    print(f"Combined loss visualization saved to {combined_plot_path}")
+    plt.show()
 
 if __name__ == "__main__":
     train()
