@@ -1,116 +1,124 @@
-# GPTini
+# ✨ GPTini
 
-![Logo](assets/GPTini_logo.png)<br>
+<div align="center">
+  
+<img src="assets/GPTini_logo.svg" alt="GPTini Logo" width="300"/>
 
-A simple yet powerful implementation of a Transformer-based language model in PyTorch. This project provides tools for training character-level language models and generating text.
+**Craft powerful language experiences with minimal complexity**
 
-## Features
+[![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
 
-- Transformer-based language model with multi-head attention
-- Character-level tokenization for simplicity
-- Simple interface for training and text generation
-- Checkpoint saving and loading
-- Optimized for RTX 4050 GPU
-- Support for temperature, top-k, and top-p sampling
+</div>
 
-## Project Structure
+## 🚀 Overview
+
+GPTini is an elegant, lightweight implementation of a Transformer-based language model built with PyTorch. It combines the power of modern transformer architecture with a distilled, approachable design—perfect for experimentation, learning, and production deployment on consumer hardware.
+
+Generate creative text, complete your thoughts, or build the foundation for your next NLP project with a model that's both sophisticated and accessible.
+
+## ✨ Features
+
+- **Transformer Architecture** — Advanced language modeling with multi-head attention mechanisms
+- **Character-level Processing** — Simple yet effective tokenization for nuanced text generation
+- **Intuitive API** — Clean interfaces for training models and generating text
+- **Advanced Sampling** — Control creativity with temperature, top-k, and nucleus (top-p) sampling
+- **Checkpoint Management** — Save and restore your trained models with ease
+
+## 🏗️ Project Architecture
 
 ```
 GPTini/
-├── config.py          # Configuration settings
-├── model.py           # Transformer model implementation
-├── train.py           # Training functionality
-├── generate.py        # Text generation functionality
-├── utils.py           # Utility functions
-├── main.py            # Main entry point
-└── README.md          # Documentation
+├── 📄 config.py          # Customizable configuration settings
+├── 🧠 model.py           # Transformer neural architecture
+├── 🔄 train.py           # Training engine and optimization
+├── ✍️ generate.py        # Text generation and sampling logic
+├── 🛠️ utils.py           # Helper functions and utilities
+├── 🎮 main.py            # User interface and entry point
+└── 📚 README.md          # Documentation (you are here!)
 ```
 
-## Requirements
+## 📋 Requirements
 
 ```
 torch>=1.10.0
 ```
 
-## Getting Started
+## 🚦 Getting Started
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/manohar3000/GPTini.git
 cd GPTini
 ```
 
-### 2. Prepare your dataset
+### 2. Prepare Your Dataset
 
-Place your text file in the project directory. The default expected filename is `input.txt`.
+Place your text corpus in the project directory as `input.txt`. The richer your dataset, the more expressive your model!
 
-### 3. Configure your model
+### 3. Configure Your Model
 
-Edit the `config.py` file to change any settings. The default configuration is optimized for an RTX 4050 GPU.
+Customize `config.py` to match your hardware capabilities and project goals. The default settings are optimized for RTX 4050 GPUs.
 
-### 4. Run the program
+### 4. Launch GPTini
 
 ```bash
 python main.py
 ```
 
-Follow the prompts to either train a new model or generate text with an existing model.
+Follow the interactive prompts to train a new language model or generate text with your existing creations.
 
-## Configuration
+## ⚙️ Configuration Options
 
-All settings are in `config.py`. The key parameters include:
+Fine-tune your experience with these key parameters in `config.py`:
 
-- **Model Parameters**:
-  - `N_EMBED`: Embedding dimension (default: 384)
-  - `N_HEADS`: Number of attention heads (default: 6)
-  - `N_LAYERS`: Number of transformer layers (default: 6)
-  - `BLOCK_SIZE`: Maximum sequence length (default: 512)
+| Category | Parameter | Description | Default |
+|----------|-----------|-------------|---------|
+| **Model Design** | `N_EMBED` | Embedding dimensionality | 384 |
+|  | `N_HEADS` | Attention heads | 6 |
+|  | `N_LAYERS` | Transformer layers | 6 |
+|  | `BLOCK_SIZE` | Sequence context length | 512 |
+| **Training** | `BATCH_SIZE` | Batch size for training | 16 |
+|  | `LEARNING_RATE` | Learning rate | 3e-4 |
+|  | `MAX_ITERATIONS` | Training iterations | 10000 |
+|  | `EVAL_INTERVAL` | Evaluation frequency | 1000 |
+| **Generation** | `DEFAULT_GEN_LENGTH` | Default output length | 100 |
+|  | `TEMPERATURE` | Output randomness | 1.0 |
+|  | `TOP_K` | Top-k sampling cutoff | 0 (disabled) |
+|  | `TOP_P` | Nucleus sampling threshold | 0.9 |
 
-- **Training Parameters**:
-  - `BATCH_SIZE`: Number of sequences in a batch (default: 16)
-  - `LEARNING_RATE`: Learning rate (default: 3e-4)
-  - `MAX_ITERATIONS`: Number of training iterations (default: 10000)
-  - `EVAL_INTERVAL`: Iterations between evaluations (default: 1000)
+## 🧩 Model Architecture
 
-- **Generation Parameters**:
-  - `DEFAULT_GEN_LENGTH`: Default number of characters to generate (default: 100)
-  - `TEMPERATURE`: Sampling temperature (default: 1.0)
-  - `TOP_K`: Top-k sampling parameter (default: 0, disabled)
-  - `TOP_P`: Top-p (nucleus) sampling parameter (default: 0.9)
+GPTini implements a streamlined version of the GPT architecture:
 
-## Model Architecture
+- **Character-level Tokenization** — Works directly with characters for simplicity and flexibility
+- **Dual Embeddings** — Combines token and positional information
+- **Multi-layer Transformer** — Stacked self-attention blocks for deep contextual understanding
+- **Attention Blocks** — Each containing:
+  - Multi-head self-attention for capturing relationships between tokens
+  - Layer normalization for training stability
+  - Feed-forward networks for transformation and representation
+- **Causal Masking** — Prevents the model from "seeing the future" during processing
 
-The language model is based on the Transformer architecture, similar to GPT:
+## 📜 License
 
-- Character-level tokenization
-- Token and positional embeddings
-- Multiple layers of self-attention blocks
-- Each block contains:
-  - Multi-head self-attention
-  - Layer normalization
-  - Feed-forward neural network
-- Causal attention masking to prevent looking ahead
+This project is available under the MIT License - see the LICENSE file for details.
 
-## Examples
+## 🙏 Acknowledgments
 
-### Training
+GPTini draws inspiration from:
+- The groundbreaking GPT architecture by OpenAI
+- The PyTorch ecosystem and community
+- Educational resources on transformer-based language models
 
-1. Edit `config.py` with your desired settings
-2. Place your text data in `input.txt`
-3. Run `python main.py` and select option 1
+---
 
-### Text Generation
+<div align="center">
+  
+**GPTini** — Big language model energy in a small, elegant package.
 
-1. Run `python main.py` and select option 2
-2. Enter the path to your saved model (e.g., `model_checkpoints/final_model.pt`)
-3. Enter a text prompt
-4. Enter the number of characters to generate
+[Report Issue](https://github.com/manohar3000/GPTini/issues) · [Request Feature](https://github.com/manohar3000/GPTini/issues) · [Contribute](https://github.com/manohar3000/GPTini/pulls)
 
-## License
-
-This project is open source and available under the MIT License.
-
-## Acknowledgments
-
-This implementation is inspired by the architecture of GPT models and various educational resources on transformer-based language models.
+</div>
